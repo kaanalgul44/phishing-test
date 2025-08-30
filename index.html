@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Phishing Mail Kontrol</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Phishing Mail Kontrol</h2>
+    <textarea id="emailText" placeholder="E-postanızı buraya yapıştırın..."></textarea>
+    <button onclick="checkEmail()">Kontrol Et</button>
+    <div id="result"></div>
+
+    <script>
+        async function checkEmail() {
+            const emailText = document.getElementById('emailText').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!emailText.trim()) {
+                resultDiv.textContent = "Lütfen bir e-posta metni girin.";
+                return;
+            }
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email_text: emailText })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Sunucudan hata: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const prediction = data.prediction || data.result || "Bilinmiyor";
+                resultDiv.textContent = "Tahmin: " + prediction.toUpperCase();
+            } catch (error) {
+                resultDiv.textContent = "Hata: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
