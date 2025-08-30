@@ -2,7 +2,7 @@ async function checkEmail() {
     const emailText = document.getElementById('emailText').value;
     const resultDiv = document.getElementById('result');
 
-    const response = await fetch('https://phishing-test-cbpk.onrender.com', {
+    const response = await fetch('https://phishing-test-cbpk.onrender.com/predict', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ email_text: emailText })
